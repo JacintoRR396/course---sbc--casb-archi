@@ -76,13 +76,14 @@ public class CustomerRestController {
 
 	@GetMapping("/tools/check-profile")
 	public String checkProfile() {
-		return "The loaded environment is -> " + this.env.getProperty("server.port") + " : " + this.env.getProperty("spring.profiles.active");
+		return "The loaded environment is -> " + this.env.getProperty("spring.application.name") + " - "
+				+ this.env.getProperty("server.port") + " : " + this.env.getProperty("customn.profile.active");
 	}
 
 	@GetMapping()
 	public ResponseEntity<?> getAll() {
-		List<Customer> customersDB = this.customerRepo.findAll(); 
-		
+		List<Customer> customersDB = this.customerRepo.findAll();
+
 		return new ResponseEntity<>(customersDB, HttpStatus.OK);
 	}
 
@@ -100,7 +101,7 @@ public class CustomerRestController {
 	public ResponseEntity<?> post(@RequestBody final Customer customerReq) {
 		customerReq.getProducts().forEach(prod -> prod.setCustomer(customerReq));
 		Customer customerDB = this.customerRepo.save(customerReq);
-		
+
 		return ResponseEntity.ok(customerDB);
 	}
 
