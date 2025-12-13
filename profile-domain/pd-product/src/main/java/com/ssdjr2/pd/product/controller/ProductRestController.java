@@ -1,5 +1,6 @@
 package com.ssdjr2.pd.product.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.core.env.Environment;
@@ -24,60 +25,70 @@ import lombok.AllArgsConstructor;
  * @version 1.0
  */
 @RestController
-@RequestMapping("/product")
+@RequestMapping("/products")
 @AllArgsConstructor
 public class ProductRestController {
 	
 	private final Environment env;
 
-	private final ProductRepository productRepo;
+	private final ProductRepository prodRepo;
 	
 	@GetMapping("/tools/check-profile")
 	public String checkProfile() {
-		return "The loaded environment is : " + this.env.getProperty("custom.activeprofileName") + " - " + this.env.getProperty("server.port");
+		return "The loaded environment is -> " + this.env.getProperty("spring.application.name") + " - "
+				+ this.env.getProperty("server.port") + " : " + this.env.getProperty("custom.profile.active");
 	}
 
 	@GetMapping()
 	public ResponseEntity<?> getAll() {
-		return new ResponseEntity<>(this.productRepo.findAll(), HttpStatus.OK);
+		List<Product> prodsDB = this.prodRepo.findAll();
+		
+		return new ResponseEntity<>(prodsDB, HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getById(@PathVariable final long id) {
-		Optional<Product> customerOpt = this.productRepo.findById(id);
-		if (customerOpt.isPresent()) {
-			return new ResponseEntity<>(customerOpt.get(), HttpStatus.OK);
+	public ResponseEntity<?> getById(@PathVariable final Long id) {
+		Optional<Product> prodDBOpt = this.prodRepo.findById(id);
+		if (prodDBOpt.isPresent()) {
+			Product prodDB = prodDBOpt.get();
+			
+			return new ResponseEntity<>(prodDB, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@PostMapping
-	public ResponseEntity<?> post(@RequestBody final Product customerReq) {
-		return new ResponseEntity<>(this.productRepo.save(customerReq), HttpStatus.OK);
+	public ResponseEntity<?> post(@RequestBody final Product prodReq) {
+		Product prodDB = this.prodRepo.save(prodReq);
+		
+		return new ResponseEntity<>(prodDB, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<?> put(@PathVariable final long id, @RequestBody final Product customerReq) {
-		Optional<Product> customerOpt = this.productRepo.findById(id);
-		if (customerOpt.isPresent()) {
-			Product customerDB = customerOpt.get();
-			customerDB.setCode(customerReq.getCode());
-			customerDB.setName(customerReq.getName());
+	public ResponseEntity<?> put(@PathVariable final Long id, @RequestBody final Product prodReq) {
+		Optional<Product> prodDBOpt = this.prodRepo.findById(id);
+		if (prodDBOpt.isPresent()) {
+			Product productDB = prodDBOpt.get();
+			productDB.setCode(prodReq.getCode());
+			productDB.setName(prodReq.getName());
 
-			return new ResponseEntity<>(this.productRepo.save(customerDB), HttpStatus.OK);
+			return new ResponseEntity<>(this.prodRepo.save(productDB), HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> delete(@PathVariable final long id) {
-		Optional<Product> customerOpt = this.productRepo.findById(id);
-		if (customerOpt.isPresent()) {
-			this.productRepo.delete(customerOpt.get());
+	public ResponseEntity<?> delete(@PathVariable final Long id) {
+		Optional<Product> prodDBOpt = this.prodRepo.findById(id);
+		if (prodDBOpt.isPresent()) {
+			Product prodDB = prodDBOpt.get();
+			this.prodRepo.delete(prodDB);
+			
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 }

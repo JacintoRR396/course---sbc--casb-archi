@@ -14,6 +14,7 @@
 	<description>config server with the properties files</description>
 	
 	<dependencies>
+		<!-- Core -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-config-server</artifactId>

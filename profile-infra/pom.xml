@@ -13,6 +13,10 @@
 	<packaging>pom</packaging>
 	<name>profile-infra</name>
 	<description>module that contains the infrastructure</description>
+	
+	<modules>
+		<module>pi-config-server</module>
+	</modules>
 
 	<properties>
 		<spring-cloud-dependencies.version>2025.0.0</spring-cloud-dependencies.version>

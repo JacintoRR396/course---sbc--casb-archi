@@ -41,7 +41,7 @@ import reactor.netty.http.client.HttpClient;
  * @version 1.0
  */
 @RestController
-@RequestMapping("/customer")
+@RequestMapping("/customers")
 public class CustomerRestController {
 
 	private static final String PROD_MS_PATH = "http://localhost:8082/rest/v1/product";
@@ -77,7 +77,7 @@ public class CustomerRestController {
 	@GetMapping("/tools/check-profile")
 	public String checkProfile() {
 		return "The loaded environment is -> " + this.env.getProperty("spring.application.name") + " - "
-				+ this.env.getProperty("server.port") + " : " + this.env.getProperty("customn.profile.active");
+				+ this.env.getProperty("server.port") + " : " + this.env.getProperty("custom.profile.active");
 	}
 
 	@GetMapping()
