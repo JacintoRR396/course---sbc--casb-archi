@@ -21,14 +21,13 @@
 	</modules>
 
 	<properties>
-		<spring-cloud-dependencies.version>2025.0.0</spring-cloud-dependencies.version>
 		<org.lombok.version>1.18.42</org.lombok.version>
 		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
 		<org.springdoc.version>2.8.14</org.springdoc.version>
 	</properties>
 
 	<dependencies>
-		<!-- Core -->
+		<!-- SpringBoot : Core -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
@@ -41,7 +40,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-hateoas</artifactId>     
         </dependency>
-		<!-- DB -->
+		<!-- SpringBoot : DB -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>

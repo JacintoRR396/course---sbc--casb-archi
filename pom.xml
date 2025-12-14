@@ -22,6 +22,7 @@
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
 		<spring-boot.version>3.5.8</spring-boot.version>
+		<spring-cloud.version>2025.0.0</spring-cloud.version>
 		<!--<postgres.version>42.7.2</postgres.version>-->
 		<!--<dockerfile-maven-version>1.4.13</dockerfile-maven-version>-->
 	</properties>
@@ -37,11 +38,18 @@
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
 	<dependencies>
-		<!-- Core -->
+		<!-- SpringBoot : Core -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -58,11 +66,16 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		<!-- Tools -->
+		<!-- SpringBoot : Tools -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
+		</dependency>
+		<!-- SpringCloud : Client ConfigServer -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
 		</dependency>
 	</dependencies>
 
