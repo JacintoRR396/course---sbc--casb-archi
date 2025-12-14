@@ -3,6 +3,7 @@ package com.ssdjr2.pd.transaction.controller;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import lombok.AllArgsConstructor;
  */
 @RestController
 @RequestMapping("/transactions")
+@RefreshScope
 @AllArgsConstructor
 public class TransactionRestController {
 

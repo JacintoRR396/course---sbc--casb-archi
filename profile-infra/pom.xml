@@ -16,5 +16,6 @@
 	
 	<modules>
 		<module>pi-config-server</module>
+		<module>pi-eureka-server</module>
 	</modules>
 </project>
