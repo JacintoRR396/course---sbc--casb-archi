@@ -27,10 +27,10 @@ public class CustomerProduct {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+	private Long id;
 
 	@Column(name = "product_id")
-	private long productId;
+	private Long productId;
 
 	@Transient
 	private String productName;

@@ -88,10 +88,12 @@ public class CustomerRestController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getById(@PathVariable final long id) {
-		Optional<Customer> customerOpt = this.customerRepo.findById(id);
-		if (customerOpt.isPresent()) {
-			return new ResponseEntity<>(customerOpt.get(), HttpStatus.OK);
+	public ResponseEntity<?> getById(@PathVariable("id") final Long id) {
+		Optional<Customer> customerDBOpt = this.customerRepo.findById(id);
+		if (customerDBOpt.isPresent()) {
+			Customer customerDB = customerDBOpt.get();
+			
+			return new ResponseEntity<>(customerDB, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -102,14 +104,14 @@ public class CustomerRestController {
 		customerReq.getProducts().forEach(prod -> prod.setCustomer(customerReq));
 		Customer customerDB = this.customerRepo.save(customerReq);
 
-		return ResponseEntity.ok(customerDB);
+		return new ResponseEntity<>(customerDB, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<?> put(@PathVariable final long id, @RequestBody final Customer customerReq) {
-		Optional<Customer> customerOpt = this.customerRepo.findById(id);
-		if (customerOpt.isPresent()) {
-			Customer customerDB = customerOpt.get();
+	public ResponseEntity<?> put(@PathVariable("id") final Long id, @RequestBody final Customer customerReq) {
+		Optional<Customer> customerDBOpt = this.customerRepo.findById(id);
+		if (customerDBOpt.isPresent()) {
+			Customer customerDB = customerDBOpt.get();
 			customerDB.setCode(customerReq.getCode());
 			customerDB.setName(customerReq.getName());
 			customerDB.setSurname(customerReq.getSurname());
@@ -124,21 +126,23 @@ public class CustomerRestController {
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> delete(@PathVariable final long id) {
-		Optional<Customer> customerOpt = this.customerRepo.findById(id);
-		if (customerOpt.isPresent()) {
-			this.customerRepo.deleteById(id);
+	public ResponseEntity<?> delete(@PathVariable("id") final Long id) {
+		Optional<Customer> customerDBOpt = this.customerRepo.findById(id);
+		if (customerDBOpt.isPresent()) {
+			Customer customerDB = customerDBOpt.get();
+			this.customerRepo.delete(customerDB);
+			
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
 	@GetMapping("/full-by-code")
 	public ResponseEntity<?> getByCode(@RequestParam String code) {
-		Optional<Customer> customerOpt = this.customerRepo.findByCode(code);
-		if (customerOpt.isPresent()) {
-			Customer customerDB = customerOpt.get();
+		Optional<Customer> customerDBOpt = this.customerRepo.findByCode(code);
+		if (customerDBOpt.isPresent()) {
+			Customer customerDB = customerDBOpt.get();
 			List<CustomerProduct> productsDB = customerDB.getProducts();
 			productsDB.forEach(prod -> {
 				String productNameMS = this.getProdNameMS(prod.getProductId());
@@ -161,7 +165,7 @@ public class CustomerRestController {
 	 * @param id of product to find
 	 * @return name of product if it was find
 	 */
-	private String getProdNameMS(long id) {
+	private String getProdNameMS(Long id) {
 		WebClient webClientBuild = this.webClientBuilder.clientConnector(new ReactorClientHttpConnector(client))
 				.baseUrl(PROD_MS_PATH).defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
 				.defaultUriVariables(Collections.singletonMap("url", PROD_MS_PATH)).build();

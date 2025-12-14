@@ -1,10 +1,13 @@
 package com.ssdjr2.pd.transaction.entities;
 
 import java.time.LocalDateTime;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -18,11 +21,20 @@ import lombok.Data;
 public class Transaction {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long id;
+    @GeneratedValue(
+        strategy = GenerationType.SEQUENCE,
+        generator = "transaction_generator"
+    )
+    @SequenceGenerator(
+        name = "transaction_generator",
+        sequenceName = "TRANSACTION_SEQ",
+        allocationSize = 1
+    )
+	private Long id;
 	
 	private String reference;
 	
+	@Column(name = "iban_account")
 	private String ibanAccount;
 	
 	private String channel;

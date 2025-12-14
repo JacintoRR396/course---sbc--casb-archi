@@ -47,7 +47,7 @@ public class ProductRestController {
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getById(@PathVariable final Long id) {
+	public ResponseEntity<?> getById(@PathVariable("id") final Long id) {
 		Optional<Product> prodDBOpt = this.prodRepo.findById(id);
 		if (prodDBOpt.isPresent()) {
 			Product prodDB = prodDBOpt.get();
@@ -66,7 +66,7 @@ public class ProductRestController {
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<?> put(@PathVariable final Long id, @RequestBody final Product prodReq) {
+	public ResponseEntity<?> put(@PathVariable("id") final Long id, @RequestBody final Product prodReq) {
 		Optional<Product> prodDBOpt = this.prodRepo.findById(id);
 		if (prodDBOpt.isPresent()) {
 			Product productDB = prodDBOpt.get();
@@ -80,7 +80,7 @@ public class ProductRestController {
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> delete(@PathVariable final Long id) {
+	public ResponseEntity<?> deleteById(@PathVariable("id") final Long id) {
 		Optional<Product> prodDBOpt = this.prodRepo.findById(id);
 		if (prodDBOpt.isPresent()) {
 			Product prodDB = prodDBOpt.get();

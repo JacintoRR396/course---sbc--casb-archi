@@ -1,5 +1,6 @@
 package com.ssdjr2.pd.transaction.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.core.env.Environment;
@@ -25,68 +26,74 @@ import lombok.AllArgsConstructor;
  * @version 1.0
  */
 @RestController
-@RequestMapping("/transaction")
+@RequestMapping("/transactions")
 @AllArgsConstructor
 public class TransactionRestController {
-	
+
 	private final Environment env;
 
 	private final TransactionRepository transactionRepo;
-	
+
 	@GetMapping("/tools/check-profile")
 	public String checkProfile() {
-		return "The loaded environment is : " + this.env.getProperty("custom.activeprofileName") + " - " + this.env.getProperty("server.port");
+		return "The loaded environment is -> " + this.env.getProperty("spring.application.name") + " - "
+				+ this.env.getProperty("server.port") + " : " + this.env.getProperty("custom.profile.active");
 	}
 
 	@GetMapping()
 	public ResponseEntity<?> getAll() {
-		return new ResponseEntity<>(this.transactionRepo.findAll(), HttpStatus.OK);
+		List<Transaction> transesDB = this.transactionRepo.findAll();
+
+		return new ResponseEntity<>(transesDB, HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<?> getById(@PathVariable final long id) {
-		return this.transactionRepo.findById(id)
-				.map(ResponseEntity::ok)
-				.orElse(ResponseEntity.notFound().build());
+	public ResponseEntity<?> getById(@PathVariable("id") final Long id) {
+		return this.transactionRepo.findById(id).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
 	}
 
 	@GetMapping("/customer/transactions")
-	public ResponseEntity<?> get(@RequestParam final String ibanAccount) {
+	public ResponseEntity<?> getByIban(@RequestParam final String ibanAccount) {
 		return new ResponseEntity<>(this.transactionRepo.findByIbanAccount(ibanAccount), HttpStatus.OK);
 	}
 
 	@PostMapping
 	public ResponseEntity<?> post(@RequestBody final Transaction transactionReq) {
-		return ResponseEntity.ok(this.transactionRepo.save(transactionReq));
+		Transaction transDB = this.transactionRepo.save(transactionReq);
+
+		return new ResponseEntity<>(transDB, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/{id}")
-	public ResponseEntity<?> put(@PathVariable final long id, @RequestBody final Transaction transactionReq) {
-		Optional<Transaction> transactionOpt = this.transactionRepo.findById(id);
-		if (transactionOpt.isPresent()) {
-			Transaction transactionDB = transactionOpt.get();
-			transactionDB.setReference(transactionReq.getReference());
-			transactionDB.setIbanAccount(transactionReq.getIbanAccount());
-			transactionDB.setChannel(transactionReq.getChannel());
-			transactionDB.setStatus(transactionReq.getStatus());
-			transactionDB.setAmount(transactionReq.getAmount());
-			transactionDB.setFee(transactionReq.getFee());
-			transactionDB.setDescription(transactionReq.getDescription());
-			transactionDB.setDate(transactionReq.getDate());
+	public ResponseEntity<?> put(@PathVariable("id") final Long id, @RequestBody final Transaction transactionReq) {
+		Optional<Transaction> transDBOpt = this.transactionRepo.findById(id);
+		if (transDBOpt.isPresent()) {
+			Transaction transDB = transDBOpt.get();
+			transDB.setReference(transactionReq.getReference());
+			transDB.setIbanAccount(transactionReq.getIbanAccount());
+			transDB.setChannel(transactionReq.getChannel());
+			transDB.setStatus(transactionReq.getStatus());
+			transDB.setAmount(transactionReq.getAmount());
+			transDB.setFee(transactionReq.getFee());
+			transDB.setDescription(transactionReq.getDescription());
+			transDB.setDate(transactionReq.getDate());
 
-			return new ResponseEntity<>(this.transactionRepo.save(transactionDB), HttpStatus.OK);
+			return new ResponseEntity<>(this.transactionRepo.save(transDB), HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 	}
 
 	@DeleteMapping("/{id}")
-	public ResponseEntity<?> delete(@PathVariable final long id) {
-		Optional<Transaction> customerOpt = this.transactionRepo.findById(id);
-		if (customerOpt.isPresent()) {
-			this.transactionRepo.delete(customerOpt.get());
+	public ResponseEntity<?> deleteById(@PathVariable("id") final Long id) {
+		Optional<Transaction> transDBOpt = this.transactionRepo.findById(id);
+		if (transDBOpt.isPresent()) {
+			Transaction transDB = transDBOpt.get();
+			this.transactionRepo.delete(transDB);
+			
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		
-		return new ResponseEntity<>(HttpStatus.OK);
+
+		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 }
