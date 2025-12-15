@@ -1,5 +1,6 @@
 package com.ssdjr2.pd.customer.controller;
 
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,11 +18,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssdjr2.pd.customer.exception.BussinesRuleException;
 import com.ssdjr2.pd.customer.respository.CustomerRepository;
 import com.ssdjr2.pd.customer.respository.entity.Customer;
-import com.ssdjr2.pd.customer.respository.entity.CustomerProduct;
-import com.ssdjr2.pd.customer.service.ServicePDConsumer;
+import com.ssdjr2.pd.customer.service.BussinesConsumerService;
 
+import jakarta.ws.rs.QueryParam;
 import lombok.AllArgsConstructor;
 
 /**
@@ -35,10 +37,10 @@ import lombok.AllArgsConstructor;
 public class CustomerRestController {
 
 	private final Environment env;
-	
+
 	private final CustomerRepository customerRepo;
-	
-	private final ServicePDConsumer servicePDConsumer;	
+
+	private final BussinesConsumerService bussinesConsumerService;
 
 	@GetMapping("/tools/check-profile")
 	public String checkProfile() {
@@ -47,10 +49,13 @@ public class CustomerRestController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<?> getAll() {
+	public ResponseEntity<?> getAll(@QueryParam("showStatusNoContent") final boolean showStatusNoContent) {
 		List<Customer> customersDB = this.customerRepo.findAll();
-
-		return new ResponseEntity<>(customersDB, HttpStatus.OK);
+		if (!customersDB.isEmpty() || !showStatusNoContent) {
+			return new ResponseEntity<>(customersDB, HttpStatus.OK);
+		} else {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
 	}
 
 	@GetMapping("/{id}")
@@ -58,7 +63,7 @@ public class CustomerRestController {
 		Optional<Customer> customerDBOpt = this.customerRepo.findById(id);
 		if (customerDBOpt.isPresent()) {
 			Customer customerDB = customerDBOpt.get();
-			
+
 			return new ResponseEntity<>(customerDB, HttpStatus.OK);
 		} else {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -66,8 +71,9 @@ public class CustomerRestController {
 	}
 
 	@PostMapping
-	public ResponseEntity<?> post(@RequestBody final Customer customerReq) {
-		customerReq.getProducts().forEach(prod -> prod.setCustomer(customerReq));
+	public ResponseEntity<?> post(@RequestBody Customer customerReq)
+			throws UnknownHostException, BussinesRuleException {
+		this.bussinesConsumerService.setProdsToOneCustomer(customerReq);
 		Customer customerDB = this.customerRepo.save(customerReq);
 
 		return new ResponseEntity<>(customerDB, HttpStatus.CREATED);
@@ -97,7 +103,7 @@ public class CustomerRestController {
 		if (customerDBOpt.isPresent()) {
 			Customer customerDB = customerDBOpt.get();
 			this.customerRepo.delete(customerDB);
-			
+
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 
@@ -105,19 +111,11 @@ public class CustomerRestController {
 	}
 
 	@GetMapping("/full-by-code")
-	public ResponseEntity<?> getByCode(@RequestParam String code) {
+	public ResponseEntity<?> getByCode(@RequestParam final String code) {
 		Optional<Customer> customerDBOpt = this.customerRepo.findByCode(code);
 		if (customerDBOpt.isPresent()) {
 			Customer customerDB = customerDBOpt.get();
-			List<CustomerProduct> productsDB = customerDB.getProducts();
-			productsDB.forEach(prod -> {
-				String productNameMS = this.servicePDConsumer.getProdNameById(prod.getProductId());
-				prod.setProductName(productNameMS);
-			});
-
-			// find all transactions that belong this account number
-			List<?> transactions = this.servicePDConsumer.getAllTransactionsByIban(customerDB.getIban());
-			customerDB.setTransactions(transactions);
+			this.bussinesConsumerService.updateProdsToOneCustomer(customerDB);
 
 			return new ResponseEntity<>(customerDB, HttpStatus.OK);
 		} else {
