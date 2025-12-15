@@ -1,7 +1,9 @@
 package com.ssdjr2.pd.customer.respository.entity;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -22,8 +24,10 @@ import lombok.Data;
 @Entity
 @Table(name = "customer_product")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class CustomerProduct {
+public class CustomerProductEntity implements Serializable {
+
+	@Serial
+	private static final long serialVersionUID = -5957201893631805639L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -35,8 +39,8 @@ public class CustomerProduct {
 	@Transient
 	private String productName;
 
-	@ManyToOne(fetch = FetchType.LAZY, targetEntity = Customer.class)
+	@ManyToOne(fetch = FetchType.LAZY, targetEntity = CustomerEntity.class)
 	@JoinColumn(name = "customer_id", nullable = true)
 	@JsonIgnore // it is necesary for avoid infinite recursion
-	private Customer customer;
+	private CustomerEntity customer;
 }

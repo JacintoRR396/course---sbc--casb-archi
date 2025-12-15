@@ -1,8 +1,8 @@
 package com.ssdjr2.pd.customer.respository.entity;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -22,8 +22,10 @@ import lombok.Data;
 @Entity
 @Table(name = "customer")
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class Customer {
+public class CustomerEntity implements Serializable {
+
+	@Serial
+	private static final long serialVersionUID = -8197083995463334976L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -42,7 +44,7 @@ public class Customer {
 	private String iban;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<CustomerProduct> products;
+	private List<CustomerProductEntity> products;
 
 	@Transient
 	private List<?> transactions;

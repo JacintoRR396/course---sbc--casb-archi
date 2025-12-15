@@ -2,7 +2,7 @@ package com.ssdjr2.pd.customer.controller;
 
 import java.net.UnknownHostException;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
@@ -18,18 +18,22 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssdjr2.pd.customer.domain.dto.CustomerReqDTO;
+import com.ssdjr2.pd.customer.domain.dto.CustomerRespDTO;
 import com.ssdjr2.pd.customer.exception.BussinesRuleException;
-import com.ssdjr2.pd.customer.respository.CustomerRepository;
-import com.ssdjr2.pd.customer.respository.entity.Customer;
-import com.ssdjr2.pd.customer.service.BussinesConsumerService;
+import com.ssdjr2.pd.customer.service.CustomerService;
 
-import jakarta.ws.rs.QueryParam;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 
 /**
  * @author jacrolrod
  * @version 1.0
  */
+@Tag(name = "Customer API", description = "This APi serve all functionality for management customers")
 @RestController
 @RequestMapping("/customers")
 @RefreshScope
@@ -38,9 +42,7 @@ public class CustomerRestController {
 
 	private final Environment env;
 
-	private final CustomerRepository customerRepo;
-
-	private final BussinesConsumerService bussinesConsumerService;
+	private final CustomerService customerService;
 
 	@GetMapping("/tools/check-profile")
 	public String checkProfile() {
@@ -48,78 +50,71 @@ public class CustomerRestController {
 				+ this.env.getProperty("server.port") + " : " + this.env.getProperty("custom.profile.active");
 	}
 
+	@Operation(description = "Return all customers bundled into Response")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping()
-	public ResponseEntity<?> getAll(@QueryParam("showStatusNoContent") final boolean showStatusNoContent) {
-		List<Customer> customersDB = this.customerRepo.findAll();
-		if (!customersDB.isEmpty() || !showStatusNoContent) {
-			return new ResponseEntity<>(customersDB, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
+	public ResponseEntity<?> getAll() {
+		List<CustomerRespDTO> customerRespDTOs = this.customerService.getAll();
+
+		return new ResponseEntity<>(customerRespDTOs, HttpStatus.OK);
 	}
 
+	@Operation(description = "Return one customer by its id into Response", summary = "Return 404 if no data found")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "404", description = "Not Found"),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getById(@PathVariable("id") final Long id) {
-		Optional<Customer> customerDBOpt = this.customerRepo.findById(id);
-		if (customerDBOpt.isPresent()) {
-			Customer customerDB = customerDBOpt.get();
+		CustomerRespDTO customerRespDTO = this.customerService.getById(id);
 
-			return new ResponseEntity<>(customerDB, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		return Objects.nonNull(customerRespDTO) ? new ResponseEntity<>(customerRespDTO, HttpStatus.OK)
+				: new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 
-	@PostMapping
-	public ResponseEntity<?> post(@RequestBody Customer customerReq)
-			throws UnknownHostException, BussinesRuleException {
-		this.bussinesConsumerService.setProdsToOneCustomer(customerReq);
-		Customer customerDB = this.customerRepo.save(customerReq);
-
-		return new ResponseEntity<>(customerDB, HttpStatus.CREATED);
-	}
-
-	@PutMapping("/{id}")
-	public ResponseEntity<?> put(@PathVariable("id") final Long id, @RequestBody final Customer customerReq) {
-		Optional<Customer> customerDBOpt = this.customerRepo.findById(id);
-		if (customerDBOpt.isPresent()) {
-			Customer customerDB = customerDBOpt.get();
-			customerDB.setCode(customerReq.getCode());
-			customerDB.setName(customerReq.getName());
-			customerDB.setSurname(customerReq.getSurname());
-			customerDB.setPhone(customerReq.getPhone());
-			customerDB.setAddress(customerReq.getAddress());
-			customerDB.setIban(customerReq.getIban());
-
-			return new ResponseEntity<>(this.customerRepo.save(customerDB), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
-
-	@DeleteMapping("/{id}")
-	public ResponseEntity<?> delete(@PathVariable("id") final Long id) {
-		Optional<Customer> customerDBOpt = this.customerRepo.findById(id);
-		if (customerDBOpt.isPresent()) {
-			Customer customerDB = customerDBOpt.get();
-			this.customerRepo.delete(customerDB);
-
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
-
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-	}
-
+	@Operation(description = "Return one customer by its code into Response", summary = "Return 404 if no data found")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "404", description = "Not Found"),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping("/full-by-code")
 	public ResponseEntity<?> getByCode(@RequestParam final String code) {
-		Optional<Customer> customerDBOpt = this.customerRepo.findByCode(code);
-		if (customerDBOpt.isPresent()) {
-			Customer customerDB = customerDBOpt.get();
-			this.bussinesConsumerService.updateProdsToOneCustomer(customerDB);
+		CustomerRespDTO customerRespDTO = this.customerService.getByCode(code);
+		
+		return Objects.nonNull(customerRespDTO) ? new ResponseEntity<>(customerRespDTO, HttpStatus.OK)
+				: new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
 
-			return new ResponseEntity<>(customerDB, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+	@Operation(description = "Return the customer created into Response")
+	@ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Created"),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
+	@PostMapping
+	public ResponseEntity<?> post(@RequestBody CustomerReqDTO customerReqDTO)
+			throws UnknownHostException, BussinesRuleException {
+		CustomerRespDTO customerRespDTO = this.customerService.add(customerReqDTO);
+
+		return new ResponseEntity<>(customerRespDTO, HttpStatus.CREATED);
+	}
+
+	@Operation(description = "Return the customer updated into Response", summary = "Return 404 if no data found")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "404", description = "Not Found"),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
+	@PutMapping("/{id}")
+	public ResponseEntity<?> put(@PathVariable("id") final Long id, @RequestBody final CustomerReqDTO customerReqDTO) {
+		CustomerRespDTO customerRespDTO = this.customerService.udpate(id, customerReqDTO);
+
+		return Objects.nonNull(customerRespDTO) ? new ResponseEntity<>(customerRespDTO, HttpStatus.OK)
+				: new ResponseEntity<>(HttpStatus.NOT_FOUND);
+	}
+
+	@Operation(description = "Delete one customer by its id", summary = "Return 404 if no data found")
+	@ApiResponses(value = { @ApiResponse(responseCode = "204", description = "No content"),
+			@ApiResponse(responseCode = "404", description = "Not Found"),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> delete(@PathVariable("id") final Long id) {
+		boolean isDeleted = this.customerService.deleteById(id);
+
+		return isDeleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 }

@@ -23,8 +23,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.ssdjr2.pd.customer.exception.BussinesRuleException;
-import com.ssdjr2.pd.customer.respository.entity.Customer;
-import com.ssdjr2.pd.customer.respository.entity.CustomerProduct;
+import com.ssdjr2.pd.customer.respository.entity.CustomerEntity;
+import com.ssdjr2.pd.customer.respository.entity.CustomerProductEntity;
 
 import io.netty.channel.ChannelOption;
 import io.netty.channel.epoll.EpollChannelOption;
@@ -64,25 +64,25 @@ public class BussinesConsumerService {
 		this.webClientBuilder = webClientBuilder;
 	}
 
-	public void setProdsToOneCustomer(Customer customer) throws BussinesRuleException, UnknownHostException {
-		List<CustomerProduct> products = customer.getProducts();
+	public void setProdsToOneCustomer(CustomerEntity customerEntity) throws BussinesRuleException, UnknownHostException {
+		List<CustomerProductEntity> products = customerEntity.getProducts();
 		if (Objects.nonNull(products) && !products.isEmpty()) {
-			for (Iterator<CustomerProduct> it = products.iterator(); it.hasNext();) {
-				CustomerProduct prod = it.next();
+			for (Iterator<CustomerProductEntity> it = products.iterator(); it.hasNext();) {
+				CustomerProductEntity prod = it.next();
 				String productNameMS = this.getProdNameById(prod.getProductId());
 				if (productNameMS.isBlank()) {
 					throw new BussinesRuleException("1025",
 							"Error validacion, producto con id " + prod.getProductId() + " no existe",
 							HttpStatus.PRECONDITION_FAILED);
 				} else {
-					prod.setCustomer(customer);
+					prod.setCustomer(customerEntity);
 				}
 			}
 		}
 	}
 
-	public void updateProdsToOneCustomer(Customer customer) {
-		List<CustomerProduct> products = customer.getProducts();
+	public void updateProdsToOneCustomer(CustomerEntity customerEntity) {
+		List<CustomerProductEntity> products = customerEntity.getProducts();
 
 		products.forEach(prod -> {
 			try {
@@ -93,8 +93,8 @@ public class BussinesConsumerService {
 			}
 		});
 
-		List<?> transactions = this.getAllTransactionsByIban(customer.getIban());
-		customer.setTransactions(transactions);
+		List<?> transactions = this.getAllTransactionsByIban(customerEntity.getIban());
+		customerEntity.setTransactions(transactions);
 	}
 
 	/**
