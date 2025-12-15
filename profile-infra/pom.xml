@@ -14,8 +14,13 @@
 	<name>profile-infra</name>
 	<description>module that contains the infrastructure</description>
 	
+	<properties>
+		<spring-boot-admin.version>3.5.3</spring-boot-admin.version>
+	</properties>
+	
 	<modules>
 		<module>pi-config-server</module>
 		<module>pi-eureka-server</module>
+		<module>pi-admin-server</module>
 	</modules>
 </project>
