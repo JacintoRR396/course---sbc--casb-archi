@@ -77,7 +77,7 @@ public class CustomerRestController {
 			@ApiResponse(responseCode = "404", description = "Not Found"),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping("/full-by-code")
-	public ResponseEntity<?> getByCode(@RequestParam final String code) {
+	public ResponseEntity<?> getByCode(@RequestParam("code") final String code) {
 		CustomerRespDTO customerRespDTO = this.customerService.getByCode(code);
 		
 		return Objects.nonNull(customerRespDTO) ? new ResponseEntity<>(customerRespDTO, HttpStatus.OK)

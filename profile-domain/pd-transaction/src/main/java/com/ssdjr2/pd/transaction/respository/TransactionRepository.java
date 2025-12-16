@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.ssdjr2.pd.transaction.entities.Transaction;
+import com.ssdjr2.pd.transaction.entities.TransactionEntity;
 
 /**
  * @author jacrolrod
  * @version 1.0
  */
-public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+public interface TransactionRepository extends JpaRepository<TransactionEntity, Long> {
 
-	public List<Transaction> findByIbanAccount(String ibanAccount);
+	public List<TransactionEntity> findByIbanAccount(String ibanAccount);
 }

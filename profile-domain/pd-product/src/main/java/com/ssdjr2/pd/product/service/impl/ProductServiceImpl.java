@@ -48,9 +48,9 @@ public class ProductServiceImpl implements ProductService {
 	public Optional<ProductRespDTO> udpate(final Long id, final ProductReqDTO productReqDTO) {
 		return this.productRepo.findById(id).map(productEntityDB -> {
 			this.applyUpdates(productReqDTO, productEntityDB);
-			ProductEntity updatedEntity = this.productRepo.save(productEntityDB);
+			ProductEntity updatedProductEntityDB = this.productRepo.save(productEntityDB);
 
-			return this.productMapper.toDto(updatedEntity);
+			return this.productMapper.toDto(updatedProductEntityDB);
 		});
 	}
 

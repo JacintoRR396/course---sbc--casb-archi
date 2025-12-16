@@ -1,5 +1,7 @@
 package com.ssdjr2.pd.transaction.entities;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -18,34 +20,30 @@ import lombok.Data;
 @Data
 @Table(name = "transaction")
 @Entity
-public class Transaction {
+public class TransactionEntity implements Serializable {
+
+	@Serial
+	private static final long serialVersionUID = -1807144526747014799L;
 
 	@Id
-    @GeneratedValue(
-        strategy = GenerationType.SEQUENCE,
-        generator = "transaction_generator"
-    )
-    @SequenceGenerator(
-        name = "transaction_generator",
-        sequenceName = "TRANSACTION_SEQ",
-        allocationSize = 1
-    )
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "transaction_generator")
+	@SequenceGenerator(name = "transaction_generator", sequenceName = "TRANSACTION_SEQ", allocationSize = 1)
 	private Long id;
-	
+
 	private String reference;
-	
+
 	@Column(name = "iban_account")
 	private String ibanAccount;
-	
+
 	private String channel;
-	
+
 	private String status;
-	
-	private double amount;
-	
-	private double fee;
-	
+
+	private Double amount;
+
+	private Double fee;
+
 	private String description;
-	
+
 	private LocalDateTime date;
 }
