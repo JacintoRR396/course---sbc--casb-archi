@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ssdjr2.pd.customer.domain.dto.CustomerReqDTO;
 import com.ssdjr2.pd.customer.domain.dto.CustomerRespDTO;
@@ -63,6 +64,7 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 	}
 
+	@Transactional
 	@Override
 	public CustomerRespDTO add(final CustomerReqDTO customerReqDTO) throws UnknownHostException, BussinesRuleException {
 		CustomerEntity customerEntityReq = this.customerMapper.toEntity(customerReqDTO);
@@ -73,6 +75,7 @@ public class CustomerServiceImpl implements CustomerService {
 		return this.customerMapper.toDto(customerEntityDB);
 	}
 
+	@Transactional
 	@Override
 	public CustomerRespDTO udpate(final Long id, final CustomerReqDTO customerReqDTO) {
 		Optional<CustomerEntity> customerEntityDBOpt = this.customerRepo.findById(id);
@@ -93,6 +96,7 @@ public class CustomerServiceImpl implements CustomerService {
 		}
 	}
 
+	@Transactional
 	@Override
 	public boolean deleteById(Long id) {
 		Optional<CustomerEntity> customerEntityDBOpt = this.customerRepo.findById(id);

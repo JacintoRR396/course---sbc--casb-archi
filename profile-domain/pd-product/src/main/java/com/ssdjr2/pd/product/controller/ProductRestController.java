@@ -1,8 +1,5 @@
 package com.ssdjr2.pd.product.controller;
 
-import java.util.List;
-import java.util.Optional;
-
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
@@ -16,81 +13,93 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ssdjr2.pd.product.respository.ProductRepository;
-import com.ssdjr2.pd.product.respository.entity.Product;
+import com.ssdjr2.pd.product.domain.dto.ProductReqDTO;
+import com.ssdjr2.pd.product.domain.dto.ProductRespDTO;
+import com.ssdjr2.pd.product.service.ProductService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 
 /**
  * @author jacrolrod
  * @version 1.0
  */
+@Tag(name = "Product API", description = "This APi serve all functionality for management products")
 @RestController
 @RequestMapping("/products")
 @RefreshScope
 @AllArgsConstructor
 public class ProductRestController {
-	
+
 	private final Environment env;
 
-	private final ProductRepository prodRepo;
-	
+	private final ProductService productService;
+
+	@Operation(description = "Check the active profile", summary = "Show app-name, port and profile")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping("/tools/check-profile")
 	public String checkProfile() {
 		return "The loaded environment is -> " + this.env.getProperty("spring.application.name") + " - "
 				+ this.env.getProperty("server.port") + " : " + this.env.getProperty("custom.profile.active");
 	}
 
+	@Operation(description = "Return all products bundled into Response")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductRespDTO.class)))),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping()
 	public ResponseEntity<?> getAll() {
-		List<Product> prodsDB = this.prodRepo.findAll();
-		
-		return new ResponseEntity<>(prodsDB, HttpStatus.OK);
+		return new ResponseEntity<>(this.productService.getAll(), HttpStatus.OK);
 	}
 
+	@Operation(description = "Return one product by its id into Response", summary = "Return 404 if no data found")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductRespDTO.class))),
+			@ApiResponse(responseCode = "404", description = "Not Found"),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getById(@PathVariable("id") final Long id) {
-		Optional<Product> prodDBOpt = this.prodRepo.findById(id);
-		if (prodDBOpt.isPresent()) {
-			Product prodDB = prodDBOpt.get();
-			
-			return new ResponseEntity<>(prodDB, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+		return this.productService.getById(id)
+				.map(productRespDTO -> new ResponseEntity<>(productRespDTO, HttpStatus.OK))
+				.orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
+	@Operation(description = "Return the product created into Response")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = ProductRespDTO.class))),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@PostMapping
-	public ResponseEntity<?> post(@RequestBody final Product prodReq) {
-		Product prodDB = this.prodRepo.save(prodReq);
-		
-		return new ResponseEntity<>(prodDB, HttpStatus.CREATED);
+	public ResponseEntity<?> post(@RequestBody final ProductReqDTO produdctReqDTO) {
+		return new ResponseEntity<>(this.productService.add(produdctReqDTO), HttpStatus.CREATED);
 	}
 
+	@Operation(description = "Return the product updated into Response", summary = "Return 404 if no data found")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductRespDTO.class))),
+			@ApiResponse(responseCode = "404", description = "Not Found"),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@PutMapping("/{id}")
-	public ResponseEntity<?> put(@PathVariable("id") final Long id, @RequestBody final Product prodReq) {
-		Optional<Product> prodDBOpt = this.prodRepo.findById(id);
-		if (prodDBOpt.isPresent()) {
-			Product productDB = prodDBOpt.get();
-			productDB.setCode(prodReq.getCode());
-			productDB.setName(prodReq.getName());
-
-			return new ResponseEntity<>(this.prodRepo.save(productDB), HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
+	public ResponseEntity<?> put(@PathVariable("id") final Long id, @RequestBody final ProductReqDTO produdctReqDTO) {
+		return this.productService.udpate(id, produdctReqDTO)
+				.map(productRespDTO -> new ResponseEntity<>(productRespDTO, HttpStatus.OK))
+				.orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
+	@Operation(description = "Delete one product by its id", summary = "Return 404 if no data found")
+	@ApiResponses(value = { @ApiResponse(responseCode = "204", description = "No content"),
+			@ApiResponse(responseCode = "404", description = "Not Found"),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteById(@PathVariable("id") final Long id) {
-		Optional<Product> prodDBOpt = this.prodRepo.findById(id);
-		if (prodDBOpt.isPresent()) {
-			Product prodDB = prodDBOpt.get();
-			this.prodRepo.delete(prodDB);
-			
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
+		boolean deleted = this.productService.deleteById(id);
 
-		return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return deleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 }
