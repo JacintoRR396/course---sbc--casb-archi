@@ -73,6 +73,11 @@
 			<artifactId>spring-boot-devtools</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
 		<!-- SpringCloud : Client ConfigServer -->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>

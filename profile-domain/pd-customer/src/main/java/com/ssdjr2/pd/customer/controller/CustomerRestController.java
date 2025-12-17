@@ -24,6 +24,9 @@ import com.ssdjr2.pd.customer.exception.BussinesRuleException;
 import com.ssdjr2.pd.customer.service.CustomerService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,6 +47,9 @@ public class CustomerRestController {
 
 	private final CustomerService customerService;
 
+	@Operation(description = "Check the active profile", summary = "Show app-name, port and profile")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping("/tools/check-profile")
 	public String checkProfile() {
 		return "The loaded environment is -> " + this.env.getProperty("spring.application.name") + " - "
@@ -51,7 +57,8 @@ public class CustomerRestController {
 	}
 
 	@Operation(description = "Return all customers bundled into Response")
-	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = CustomerRespDTO.class)))),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping()
 	public ResponseEntity<?> getAll() {
@@ -61,7 +68,8 @@ public class CustomerRestController {
 	}
 
 	@Operation(description = "Return one customer by its id into Response", summary = "Return 404 if no data found")
-	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CustomerRespDTO.class))),
 			@ApiResponse(responseCode = "404", description = "Not Found"),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping("/{id}")
@@ -73,7 +81,8 @@ public class CustomerRestController {
 	}
 
 	@Operation(description = "Return one customer by its code into Response", summary = "Return 404 if no data found")
-	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CustomerRespDTO.class))),
 			@ApiResponse(responseCode = "404", description = "Not Found"),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping("/full-by-code")
@@ -85,7 +94,8 @@ public class CustomerRestController {
 	}
 
 	@Operation(description = "Return the customer created into Response")
-	@ApiResponses(value = { @ApiResponse(responseCode = "201", description = "Created"),
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = CustomerRespDTO.class))),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@PostMapping
 	public ResponseEntity<?> post(@RequestBody CustomerReqDTO customerReqDTO)
@@ -96,7 +106,8 @@ public class CustomerRestController {
 	}
 
 	@Operation(description = "Return the customer updated into Response", summary = "Return 404 if no data found")
-	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = CustomerRespDTO.class))),
 			@ApiResponse(responseCode = "404", description = "Not Found"),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@PutMapping("/{id}")

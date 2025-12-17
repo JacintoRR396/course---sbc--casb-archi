@@ -65,7 +65,7 @@ public class TransactionRestController {
 			@ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = TransactionRespDTO.class)))),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping("/customer")
-	public ResponseEntity<?> getByIban(@RequestParam("ibanAccount") final String ibanAccount) {
+	public ResponseEntity<?> getAllByIban(@RequestParam("ibanAccount") final String ibanAccount) {
 		return new ResponseEntity<>(this.transactionService.getAllByIban(ibanAccount), HttpStatus.OK);
 	}
 
