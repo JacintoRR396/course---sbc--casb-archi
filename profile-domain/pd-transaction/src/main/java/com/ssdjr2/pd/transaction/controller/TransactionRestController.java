@@ -43,7 +43,8 @@ public class TransactionRestController {
 	private final TransactionService transactionService;
 
 	@Operation(description = "Check the active profile", summary = "Show app-name, port and profile")
-	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK"),
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK"),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping("/tools/check-profile")
 	public String checkProfile() {
@@ -98,13 +99,14 @@ public class TransactionRestController {
 	@PutMapping("/{id}")
 	public ResponseEntity<?> put(@PathVariable("id") final Long id,
 			@RequestBody final TransactionReqDTO transactionReqDTO) {
-		return this.transactionService.udpate(id, transactionReqDTO)
+		return this.transactionService.update(id, transactionReqDTO)
 				.map(productRespDTO -> new ResponseEntity<>(productRespDTO, HttpStatus.OK))
 				.orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
 	@Operation(description = "Delete one transaction by its id", summary = "Return 404 if no data found")
-	@ApiResponses(value = { @ApiResponse(responseCode = "204", description = "No content"),
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "204", description = "No content"),
 			@ApiResponse(responseCode = "404", description = "Not Found"),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@DeleteMapping("/{id}")

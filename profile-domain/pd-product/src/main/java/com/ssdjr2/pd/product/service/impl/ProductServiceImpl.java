@@ -27,11 +27,13 @@ public class ProductServiceImpl implements ProductService {
 
 	private final ProductRepository productRepo;
 
+	@Transactional(readOnly = false)
 	@Override
 	public List<ProductRespDTO> getAll() {
 		return this.productMapper.toDtos(this.productRepo.findAll());
 	}
 
+	@Transactional(readOnly = false)
 	@Override
 	public Optional<ProductRespDTO> getById(final Long id) {
 		return this.productRepo.findById(id).map(this.productMapper::toDto);
@@ -45,7 +47,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Transactional
 	@Override
-	public Optional<ProductRespDTO> udpate(final Long id, final ProductReqDTO productReqDTO) {
+	public Optional<ProductRespDTO> update(final Long id, final ProductReqDTO productReqDTO) {
 		return this.productRepo.findById(id).map(productEntityDB -> {
 			this.applyUpdates(productReqDTO, productEntityDB);
 			ProductEntity updatedProductEntityDB = this.productRepo.save(productEntityDB);
@@ -63,9 +65,9 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public boolean deleteById(final Long id) {
 		Optional<ProductEntity> productEntityDBOpt = this.productRepo.findById(id);
-		
+
 		productEntityDBOpt.ifPresent(this.productRepo::delete);
-		
+
 		return productEntityDBOpt.isPresent();
 	}
 }

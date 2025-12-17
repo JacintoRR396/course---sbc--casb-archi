@@ -27,16 +27,19 @@ public class TransactionServiceImpl implements TransactionService {
 
 	private final TransactionRepository transactionRepo;
 
+	@Transactional(readOnly = false)
 	@Override
 	public List<TransactionRespDTO> getAll() {
 		return this.transactionMapper.toDtos(this.transactionRepo.findAll());
 	}
 
+	@Transactional(readOnly = false)
 	@Override
 	public List<TransactionRespDTO> getAllByIban(final String iban) {
 		return this.transactionMapper.toDtos(this.transactionRepo.findByIbanAccount(iban));
 	}
 
+	@Transactional(readOnly = false)
 	@Override
 	public Optional<TransactionRespDTO> getById(final Long id) {
 		return this.transactionRepo.findById(id).map(this.transactionMapper::toDto);
@@ -51,7 +54,7 @@ public class TransactionServiceImpl implements TransactionService {
 
 	@Transactional
 	@Override
-	public Optional<TransactionRespDTO> udpate(final Long id, final TransactionReqDTO transactionReqDTO) {
+	public Optional<TransactionRespDTO> update(final Long id, final TransactionReqDTO transactionReqDTO) {
 		return this.transactionRepo.findById(id).map(transactionEntityDB -> {
 			this.applyUpdates(transactionReqDTO, transactionEntityDB);
 			TransactionEntity updatedTransactionEntityDB = this.transactionRepo.save(transactionEntityDB);

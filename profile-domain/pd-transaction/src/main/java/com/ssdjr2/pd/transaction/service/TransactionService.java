@@ -20,7 +20,7 @@ public interface TransactionService {
 
 	TransactionRespDTO add(final TransactionReqDTO transactionReqDTO);
 
-	Optional<TransactionRespDTO> udpate(final Long id, final TransactionReqDTO transactionReqDTO);
+	Optional<TransactionRespDTO> update(final Long id, final TransactionReqDTO transactionReqDTO);
 
 	boolean deleteById(final Long id);
 }

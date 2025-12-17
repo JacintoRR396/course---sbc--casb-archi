@@ -13,12 +13,12 @@ import com.ssdjr2.pd.product.domain.dto.ProductRespDTO;
 public interface ProductService {
 
 	List<ProductRespDTO> getAll();
-	
+
 	Optional<ProductRespDTO> getById(final Long id);
-	
+
 	ProductRespDTO add(final ProductReqDTO productReqDTO);
-	
-	Optional<ProductRespDTO> udpate(final Long id, final ProductReqDTO productReqDTO);
-	
+
+	Optional<ProductRespDTO> update(final Long id, final ProductReqDTO productReqDTO);
+
 	boolean deleteById(final Long id);
 }

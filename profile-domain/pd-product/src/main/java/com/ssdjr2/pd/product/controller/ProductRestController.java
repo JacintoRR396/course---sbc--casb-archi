@@ -82,18 +82,20 @@ public class ProductRestController {
 	}
 
 	@Operation(description = "Return the product updated into Response", summary = "Return 404 if no data found")
-	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductRespDTO.class))),
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductRespDTO.class))),
 			@ApiResponse(responseCode = "404", description = "Not Found"),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@PutMapping("/{id}")
 	public ResponseEntity<?> put(@PathVariable("id") final Long id, @RequestBody final ProductReqDTO produdctReqDTO) {
-		return this.productService.udpate(id, produdctReqDTO)
+		return this.productService.update(id, produdctReqDTO)
 				.map(productRespDTO -> new ResponseEntity<>(productRespDTO, HttpStatus.OK))
 				.orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
 	@Operation(description = "Delete one product by its id", summary = "Return 404 if no data found")
-	@ApiResponses(value = { @ApiResponse(responseCode = "204", description = "No content"),
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "204", description = "No content"),
 			@ApiResponse(responseCode = "404", description = "Not Found"),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@DeleteMapping("/{id}")
