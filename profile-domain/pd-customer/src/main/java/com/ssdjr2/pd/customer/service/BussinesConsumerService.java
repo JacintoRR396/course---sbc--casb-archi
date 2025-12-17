@@ -64,7 +64,7 @@ public class BussinesConsumerService {
 		this.webClientBuilder = webClientBuilder;
 	}
 
-	public void setProdsToOneCustomer(CustomerEntity customerEntity) throws BussinesRuleException, UnknownHostException {
+	public CustomerEntity setProdsToOneCustomer(CustomerEntity customerEntity) throws BussinesRuleException, UnknownHostException {
 		List<CustomerProductEntity> products = customerEntity.getProducts();
 		if (Objects.nonNull(products) && !products.isEmpty()) {
 			for (Iterator<CustomerProductEntity> it = products.iterator(); it.hasNext();) {
@@ -79,9 +79,11 @@ public class BussinesConsumerService {
 				}
 			}
 		}
+		
+		return customerEntity;
 	}
 
-	public void updateProdsToOneCustomer(CustomerEntity customerEntity) {
+	public CustomerEntity updateProdsToOneCustomer(CustomerEntity customerEntity) {
 		List<CustomerProductEntity> products = customerEntity.getProducts();
 
 		products.forEach(prod -> {
@@ -95,6 +97,8 @@ public class BussinesConsumerService {
 
 		List<?> transactions = this.getAllTransactionsByIban(customerEntity.getIban());
 		customerEntity.setTransactions(transactions);
+		
+		return customerEntity;
 	}
 
 	/**

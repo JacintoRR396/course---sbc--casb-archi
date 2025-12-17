@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
 
 import com.ssdjr2.pd.customer.domain.dto.CustomerReqDTO;
@@ -19,11 +20,13 @@ public interface CustomerMapper {
 
 	@Mapping(target = "id", ignore = true)
 	@Mapping(target = "transactions", ignore = true)
-	CustomerEntity toEntity(CustomerReqDTO dto);
+	CustomerEntity fromDtoToEntity(CustomerReqDTO dto);
+	
+	CustomerEntity updateFromDtoToEntity(CustomerReqDTO dto, @MappingTarget CustomerEntity entity);
 
-	List<CustomerEntity> toEntities(List<CustomerReqDTO> dtos);
+	List<CustomerEntity> fromDtosToEntities(List<CustomerReqDTO> dtos);
 
-	CustomerRespDTO toDto(CustomerEntity entity);
+	CustomerRespDTO fromEntityToDto(CustomerEntity entity);
 
-	List<CustomerRespDTO> toDtos(List<CustomerEntity> entities);
+	List<CustomerRespDTO> fromEntitiesToDtos(List<CustomerEntity> entities);
 }

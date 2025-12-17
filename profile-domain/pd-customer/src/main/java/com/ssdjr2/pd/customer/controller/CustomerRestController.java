@@ -1,8 +1,6 @@
 package com.ssdjr2.pd.customer.controller;
 
 import java.net.UnknownHostException;
-import java.util.List;
-import java.util.Objects;
 
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.core.env.Environment;
@@ -62,9 +60,7 @@ public class CustomerRestController {
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping()
 	public ResponseEntity<?> getAll() {
-		List<CustomerRespDTO> customerRespDTOs = this.customerService.getAll();
-
-		return new ResponseEntity<>(customerRespDTOs, HttpStatus.OK);
+		return new ResponseEntity<>(this.customerService.getAll(), HttpStatus.OK);
 	}
 
 	@Operation(description = "Return one customer by its id into Response", summary = "Return 404 if no data found")
@@ -74,10 +70,9 @@ public class CustomerRestController {
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getById(@PathVariable("id") final Long id) {
-		CustomerRespDTO customerRespDTO = this.customerService.getById(id);
-
-		return Objects.nonNull(customerRespDTO) ? new ResponseEntity<>(customerRespDTO, HttpStatus.OK)
-				: new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return this.customerService.getById(id)
+				.map(customerRespDTO -> new ResponseEntity<>(customerRespDTO, HttpStatus.OK))
+				.orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
 	@Operation(description = "Return one customer by its code into Response", summary = "Return 404 if no data found")
@@ -87,10 +82,9 @@ public class CustomerRestController {
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@GetMapping("/full-by-code")
 	public ResponseEntity<?> getByCode(@RequestParam("code") final String code) {
-		CustomerRespDTO customerRespDTO = this.customerService.getByCode(code);
-		
-		return Objects.nonNull(customerRespDTO) ? new ResponseEntity<>(customerRespDTO, HttpStatus.OK)
-				: new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return this.customerService.getByCode(code)
+				.map(customerRespDTO -> new ResponseEntity<>(customerRespDTO, HttpStatus.OK))
+				.orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
 	@Operation(description = "Return the customer created into Response")
@@ -100,9 +94,7 @@ public class CustomerRestController {
 	@PostMapping
 	public ResponseEntity<?> post(@RequestBody CustomerReqDTO customerReqDTO)
 			throws UnknownHostException, BussinesRuleException {
-		CustomerRespDTO customerRespDTO = this.customerService.add(customerReqDTO);
-
-		return new ResponseEntity<>(customerRespDTO, HttpStatus.CREATED);
+		return new ResponseEntity<>(this.customerService.add(customerReqDTO), HttpStatus.CREATED);
 	}
 
 	@Operation(description = "Return the customer updated into Response", summary = "Return 404 if no data found")
@@ -112,10 +104,10 @@ public class CustomerRestController {
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@PutMapping("/{id}")
 	public ResponseEntity<?> put(@PathVariable("id") final Long id, @RequestBody final CustomerReqDTO customerReqDTO) {
-		CustomerRespDTO customerRespDTO = this.customerService.udpate(id, customerReqDTO);
-
-		return Objects.nonNull(customerRespDTO) ? new ResponseEntity<>(customerRespDTO, HttpStatus.OK)
-				: new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return this.customerService
+				.update(id, customerReqDTO)
+				.map(customerRespDTO -> new ResponseEntity<>(customerRespDTO, HttpStatus.OK))
+				.orElseGet(() -> new ResponseEntity<>(HttpStatus.NOT_FOUND));
 	}
 
 	@Operation(description = "Delete one customer by its id", summary = "Return 404 if no data found")
@@ -124,8 +116,8 @@ public class CustomerRestController {
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> delete(@PathVariable("id") final Long id) {
-		boolean isDeleted = this.customerService.deleteById(id);
+		boolean deleted = this.customerService.deleteById(id);
 
-		return isDeleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		return deleted ? new ResponseEntity<>(HttpStatus.NO_CONTENT) : new ResponseEntity<>(HttpStatus.NOT_FOUND);
 	}
 }

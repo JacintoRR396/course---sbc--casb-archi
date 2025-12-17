@@ -32,82 +32,49 @@ public class CustomerServiceImpl implements CustomerService {
 
 	private final BussinesConsumerService bussinesConsumerService;
 
+	@Transactional(readOnly = false)
 	@Override
 	public List<CustomerRespDTO> getAll() {
-		List<CustomerEntity> customerEntitiesDB = this.customerRepo.findAll();
-
-		return this.customerMapper.toDtos(customerEntitiesDB);
+		return this.customerMapper.fromEntitiesToDtos(this.customerRepo.findAll());
 	}
 
+	@Transactional(readOnly = false)
 	@Override
-	public CustomerRespDTO getById(final Long id) {
-		Optional<CustomerEntity> customerEntityDBOpt = this.customerRepo.findById(id);
-		if (customerEntityDBOpt.isPresent()) {
-			CustomerEntity customerEntityDB = customerEntityDBOpt.get();
-
-			return this.customerMapper.toDto(customerEntityDB);
-		} else {
-			return null;
-		}
+	public Optional<CustomerRespDTO> getById(final Long id) {
+		return this.customerRepo.findById(id).map(this.customerMapper::fromEntityToDto);
 	}
 
-	@Override
-	public CustomerRespDTO getByCode(final String code) {
-		Optional<CustomerEntity> customerEntityDBOpt = this.customerRepo.findByCode(code);
-		if (customerEntityDBOpt.isPresent()) {
-			CustomerEntity customerEntityDB = customerEntityDBOpt.get();
-			this.bussinesConsumerService.updateProdsToOneCustomer(customerEntityDB);
-
-			return this.customerMapper.toDto(customerEntityDB);
-		} else {
-			return null;
-		}
+	@Transactional(readOnly = false)
+	public Optional<CustomerRespDTO> getByCode(final String code) {
+		return this.customerRepo.findByCode(code)
+				.map(this.bussinesConsumerService::updateProdsToOneCustomer)
+				.map(this.customerMapper::fromEntityToDto);
 	}
 
 	@Transactional
 	@Override
 	public CustomerRespDTO add(final CustomerReqDTO customerReqDTO) throws UnknownHostException, BussinesRuleException {
-		CustomerEntity customerEntityReq = this.customerMapper.toEntity(customerReqDTO);
+		CustomerEntity customerEntityReq = this.customerMapper.fromDtoToEntity(customerReqDTO);
 		this.bussinesConsumerService.setProdsToOneCustomer(customerEntityReq);
 
-		CustomerEntity customerEntityDB = this.customerRepo.save(customerEntityReq);
-
-		return this.customerMapper.toDto(customerEntityDB);
+		return this.customerMapper.fromEntityToDto(this.customerRepo.save(customerEntityReq));
 	}
 
 	@Transactional
 	@Override
-	public CustomerRespDTO udpate(final Long id, final CustomerReqDTO customerReqDTO) {
-		Optional<CustomerEntity> customerEntityDBOpt = this.customerRepo.findById(id);
-		if (customerEntityDBOpt.isPresent()) {
-			CustomerEntity customerEntityDB = customerEntityDBOpt.get();
-			customerEntityDB.setCode(customerReqDTO.getCode());
-			customerEntityDB.setName(customerReqDTO.getName());
-			customerEntityDB.setSurname(customerReqDTO.getSurname());
-			customerEntityDB.setPhone(customerReqDTO.getPhone());
-			customerEntityDB.setAddress(customerReqDTO.getAddress());
-			customerEntityDB.setIban(customerReqDTO.getIban());
-
-			customerEntityDB = this.customerRepo.save(customerEntityDB);
-
-			return this.customerMapper.toDto(customerEntityDB);
-		} else {
-			return null;
-		}
+	public Optional<CustomerRespDTO> update(final Long id, final CustomerReqDTO customerReqDTO) {
+		return this.customerRepo.findById(id)
+				.map(customerEntityDB -> this.customerMapper.updateFromDtoToEntity(customerReqDTO, customerEntityDB))
+				.map(this.customerRepo::save).map(this.customerMapper::fromEntityToDto);
 	}
 
 	@Transactional
 	@Override
 	public boolean deleteById(Long id) {
 		Optional<CustomerEntity> customerEntityDBOpt = this.customerRepo.findById(id);
-		if (customerEntityDBOpt.isPresent()) {
-			CustomerEntity customerEntityDB = customerEntityDBOpt.get();
 
-			this.customerRepo.delete(customerEntityDB);
+		customerEntityDBOpt.ifPresent(this.customerRepo::delete);
 
-			return true;
-		}
-
-		return false;
+		return customerEntityDBOpt.isEmpty();
 	}
 }

@@ -2,6 +2,7 @@ package com.ssdjr2.pd.customer.service;
 
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Optional;
 
 import com.ssdjr2.pd.customer.domain.dto.CustomerReqDTO;
 import com.ssdjr2.pd.customer.domain.dto.CustomerRespDTO;
@@ -14,14 +15,14 @@ import com.ssdjr2.pd.customer.exception.BussinesRuleException;
 public interface CustomerService {
 
 	List<CustomerRespDTO> getAll();
-	
-	CustomerRespDTO getById(final Long id);
-	
-	CustomerRespDTO getByCode(final String code);
-	
+
+	Optional<CustomerRespDTO> getById(final Long id);
+
+	Optional<CustomerRespDTO> getByCode(final String code);
+
 	CustomerRespDTO add(final CustomerReqDTO customerReqDTO) throws UnknownHostException, BussinesRuleException;
-	
-	CustomerRespDTO udpate(final Long id, final CustomerReqDTO customerReqDTO);
-	
+
+	Optional<CustomerRespDTO> update(final Long id, final CustomerReqDTO customerReqDTO);
+
 	boolean deleteById(final Long id);
 }
