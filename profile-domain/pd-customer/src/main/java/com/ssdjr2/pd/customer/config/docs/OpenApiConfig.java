@@ -28,7 +28,7 @@ public class OpenApiConfig {
 	OpenAPI myOpenAPI() {
 		Server localServer = new Server();
 		localServer.setUrl(this.openApiProperties.getMicro().get("urlLocal"));
-		localServer.setDescription("Server URL in Loccal environment");
+		localServer.setDescription("Server URL in Local environment");
 
 		Server devServer = new Server();
 		devServer.setUrl(this.openApiProperties.getMicro().get("urlDev"));

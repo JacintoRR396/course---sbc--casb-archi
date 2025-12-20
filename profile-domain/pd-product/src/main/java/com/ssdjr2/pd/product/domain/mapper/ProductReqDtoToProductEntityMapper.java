@@ -4,10 +4,11 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.ReportingPolicy;
+import org.springframework.core.convert.converter.Converter;
 
 import com.ssdjr2.pd.product.domain.dto.ProductReqDTO;
-import com.ssdjr2.pd.product.domain.dto.ProductRespDTO;
 import com.ssdjr2.pd.product.respository.entity.ProductEntity;
 
 /**
@@ -15,14 +16,13 @@ import com.ssdjr2.pd.product.respository.entity.ProductEntity;
  * @version 1.0
  */
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
-public interface ProductMapper {
+public interface ProductReqDtoToProductEntityMapper extends Converter<ProductReqDTO, ProductEntity> {
 
+	@Override
 	@Mapping(target = "id", ignore = true)
-	ProductEntity toEntity(ProductReqDTO dto);
+	ProductEntity convert(final ProductReqDTO source);
 
-	List<ProductEntity> toEntities(List<ProductReqDTO> dtos);
+	void update(final ProductReqDTO dto, @MappingTarget ProductEntity entity);
 
-	ProductRespDTO toDto(ProductEntity entity);
-
-	List<ProductRespDTO> toDtos(List<ProductEntity> entities);
+	List<ProductEntity> convertAll(final List<ProductReqDTO> dtos);
 }

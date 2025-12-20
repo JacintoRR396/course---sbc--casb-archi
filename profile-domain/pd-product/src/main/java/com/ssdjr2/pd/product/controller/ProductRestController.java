@@ -30,7 +30,7 @@ import lombok.AllArgsConstructor;
  * @author jacrolrod
  * @version 1.0
  */
-@Tag(name = "Product API", description = "This APi serve all functionality for management products")
+@Tag(name = "Product", description = "This section serve all functionality for management products")
 @RestController
 @RequestMapping("/products")
 @RefreshScope
