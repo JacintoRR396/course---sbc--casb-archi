@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ssdjr2.pd.product.domain.dto.ProductReqDTO;
 import com.ssdjr2.pd.product.domain.dto.ProductRespDTO;
+import com.ssdjr2.pd.product.interceptor.LogExec;
 import com.ssdjr2.pd.product.service.ProductService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -55,6 +56,7 @@ public class ProductRestController {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "OK", content = @Content(array = @ArraySchema(schema = @Schema(implementation = ProductRespDTO.class)))),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
+	@LogExec
 	@GetMapping()
 	public ResponseEntity<?> getAll() {
 		return new ResponseEntity<>(this.productService.getAll(), HttpStatus.OK);
@@ -65,6 +67,7 @@ public class ProductRestController {
 			@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductRespDTO.class))),
 			@ApiResponse(responseCode = "404", description = "Not Found"),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
+	@LogExec
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getById(@PathVariable("id") final Long id) {
 		return this.productService.getById(id)
@@ -76,6 +79,7 @@ public class ProductRestController {
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "201", description = "Created", content = @Content(schema = @Schema(implementation = ProductRespDTO.class))),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
+	@LogExec
 	@PostMapping
 	public ResponseEntity<?> post(@RequestBody final ProductReqDTO produdctReqDTO) {
 		return new ResponseEntity<>(this.productService.add(produdctReqDTO), HttpStatus.CREATED);
@@ -86,6 +90,7 @@ public class ProductRestController {
 			@ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = ProductRespDTO.class))),
 			@ApiResponse(responseCode = "404", description = "Not Found"),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
+	@LogExec
 	@PutMapping("/{id}")
 	public ResponseEntity<?> put(@PathVariable("id") final Long id, @RequestBody final ProductReqDTO produdctReqDTO) {
 		return this.productService.update(id, produdctReqDTO)
@@ -98,6 +103,7 @@ public class ProductRestController {
 			@ApiResponse(responseCode = "204", description = "No content"),
 			@ApiResponse(responseCode = "404", description = "Not Found"),
 			@ApiResponse(responseCode = "500", description = "Internal Server Error") })
+	@LogExec
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteById(@PathVariable("id") final Long id) {
 		boolean deleted = this.productService.deleteById(id);
