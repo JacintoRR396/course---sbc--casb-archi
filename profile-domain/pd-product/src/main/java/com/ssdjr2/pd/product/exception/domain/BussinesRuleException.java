@@ -1,4 +1,4 @@
-package com.ssdjr2.pd.product.exception;
+package com.ssdjr2.pd.product.exception.domain;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class BussinesRuleException extends Exception {
+public class BussinesRuleException extends RuntimeException {
 
 	private static final long serialVersionUID = 421048234394959464L;
 

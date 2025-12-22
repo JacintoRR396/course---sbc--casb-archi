@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ssdjr2.pd.product.config.interceptors.LogExec;
 import com.ssdjr2.pd.product.domain.dto.ProductReqDTO;
 import com.ssdjr2.pd.product.domain.dto.ProductRespDTO;
-import com.ssdjr2.pd.product.interceptor.LogExec;
 import com.ssdjr2.pd.product.service.ProductService;
 
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,4 +1,4 @@
-package com.ssdjr2.pd.product.interceptor;
+package com.ssdjr2.pd.product.config.interceptors;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

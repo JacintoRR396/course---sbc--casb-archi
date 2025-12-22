@@ -1,4 +1,4 @@
-package com.ssdjr2.pd.product.interceptor;
+package com.ssdjr2.pd.product.config.interceptors;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;

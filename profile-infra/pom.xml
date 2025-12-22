@@ -21,7 +21,7 @@
 	<modules>
 		<module>pi-config-server</module>
 		<module>pi-eureka-server</module>
-		<module>pi-apigateway-server</module>
 		<module>pi-admin-server</module>
+		<module>pi-apigateway-server</module>
 	</modules>
 </project>

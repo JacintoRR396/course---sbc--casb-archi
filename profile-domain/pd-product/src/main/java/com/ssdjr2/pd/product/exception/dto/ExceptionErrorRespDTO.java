@@ -1,4 +1,4 @@
-package com.ssdjr2.pd.product.domain;
+package com.ssdjr2.pd.product.exception.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Schema(description = "This model is used to return errors in RFC 7807 which created a generalized error-handling schema composed by five parts")
 @NoArgsConstructor
 @Data
-public class StandarizedApiExResp {
+public class ExceptionErrorRespDTO {
 	
     @Schema(description = "The unique uri identifier that categorizes the error", name = "type",
             requiredMode = Schema.RequiredMode.REQUIRED, example = "/errors/authentication/not-authorized")
@@ -33,7 +33,7 @@ public class StandarizedApiExResp {
             requiredMode = Schema.RequiredMode.REQUIRED, example = "/errors/authentication/not-authorized/01")
     private String instance;
 
-    public StandarizedApiExResp(final String type, final String title, final String code, final String detail) {
+    public ExceptionErrorRespDTO(final String type, final String title, final String code, final String detail) {
         super();
         this.type = type;
         this.title = title;

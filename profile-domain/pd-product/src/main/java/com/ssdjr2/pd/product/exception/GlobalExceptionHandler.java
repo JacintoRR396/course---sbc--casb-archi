@@ -5,28 +5,29 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.ssdjr2.pd.product.domain.StandarizedApiExResp;
+import com.ssdjr2.pd.product.exception.domain.BussinesRuleException;
+import com.ssdjr2.pd.product.exception.dto.ExceptionErrorRespDTO;
 
 /**
  * @author jacrolrod
  * @version 1.0
  */
 @RestControllerAdvice
-public class ApiExceptionHandler {
+public class GlobalExceptionHandler {
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<?> handleUnknownHostException(Exception ex) {
-		StandarizedApiExResp standarizedApiExResp = new StandarizedApiExResp("TECH", "Input / Ouput error", "1024",
+		ExceptionErrorRespDTO exceptionErrorRespDTO = new ExceptionErrorRespDTO("TECH", "Input / Ouput error", "1024",
 				ex.getMessage());
 
-		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(standarizedApiExResp);
+		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(exceptionErrorRespDTO);
 	}
 
 	@ExceptionHandler(BussinesRuleException.class)
 	public ResponseEntity<?> handleBussinesRuleException(BussinesRuleException ex) {
-		StandarizedApiExResp standarizedApiExResp = new StandarizedApiExResp("BUSSINES", "Validation error",
+		ExceptionErrorRespDTO exceptionErrorRespDTO = new ExceptionErrorRespDTO("BUSSINES", "Validation error",
 				ex.getCode(), ex.getMessage());
 
-		return ResponseEntity.status(ex.getHttpStatus()).body(standarizedApiExResp);
+		return ResponseEntity.status(ex.getHttpStatus()).body(exceptionErrorRespDTO);
 	}
 }

@@ -24,8 +24,8 @@
 		<maven.compiler.target>21</maven.compiler.target>
 		<spring-boot.version>3.5.8</spring-boot.version>
 		<spring-cloud.version>2025.0.0</spring-cloud.version>
-		<!--<postgres.version>42.7.2</postgres.version>-->
 		<!--<dockerfile-maven-version>1.4.13</dockerfile-maven-version>-->
+		<!--<postgres.version>42.7.2</postgres.version>-->
 	</properties>
 
 	<!--Allows consolidate and centralized management of deendency version witout adding dependencies
