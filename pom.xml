@@ -26,6 +26,9 @@
 		<spring-cloud.version>2025.0.0</spring-cloud.version>
 		<!--<dockerfile-maven-version>1.4.13</dockerfile-maven-version>-->
 		<!--<postgres.version>42.7.2</postgres.version>-->
+		
+		<org.lombok.version>1.18.42</org.lombok.version>
+		<org.lombok-binding.version>0.2.0</org.lombok-binding.version>
 	</properties>
 
 	<!--Allows consolidate and centralized management of deendency version witout adding dependencies
@@ -99,6 +102,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<!-- Tools -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 
